@@ -1,107 +1,100 @@
-# 🛡️ OnyxOps Sentinel
-### Automated Down Detector, Exploit Diagnostic & 24/7 Threat Intelligence Bot
-**Created for:** OnyxOps by WolfeGuard  
-**Lead Developer:** `sinfulldesirez` (Discord)  
-**Version:** 1.0.0
+# OnyxOps Sentinel
 
----
+Website uptime monitoring and security diagnostics for OnyxOps by WolfeGuard.
+Version 1.0.0.
 
-## 📌 Overview
+## Team
 
-**OnyxOps Sentinel** is a full-featured incident detection, continuous uptime monitoring, and deep vulnerability diagnostic system. When your sites experience outages, performance drops, or attacks, Sentinel does not merely detect that the service is down: it runs an immediate **Deep Diagnostic Scan** to identify the root cause, determine if the failure is at the Cloudflare edge or origin server, probe for exposed secrets/files, audit OWASP security headers, check for CORS misconfigurations, detect in-browser malware/crypto-miners, and dispatch alerts via Phone (SMS), Email, and Discord.
+- CortezDemartino — OnyxOps Founder
+- sinfulldesirez — Lead Developer (Discord)
+- NovaDev — Developer
 
----
+## What it does
 
-## 🕹️ Interactive Feature Menu
+- Checks HTTP status, response time, DNS resolution, and TLS certificate expiry.
+- Displays target status and uptime in a terminal dashboard.
+- Runs additional diagnostics when a monitored target fails.
+- Identifies common Cloudflare errors and records Ray IDs and cache status.
+- Checks security headers, cookie flags, CORS behavior, advertised HTTP methods,
+  exposed files, and common TCP ports.
+- Looks for known malware and defacement patterns in fetched HTML.
+- Saves incident reports as Markdown and JSON.
+- Supports outage and recovery alerts through Twilio SMS, SMTP email, and Discord.
 
-You don't need to remember different CLI commands! Running `run.bat` or `python main.py` opens the interactive console menu:
+Scan results are indicators for investigation. Pattern matching cannot establish
+that a site is secure or compromised, and HTML checks do not execute JavaScript.
 
-```
-  ___  _  _ __   ____  _____  ___  ___   ____ ___ _  _ _____ ___ _  _ ____ _    
- / _ \| \| |\ \ / /\ \/ / _ \| _ \/ __| / ___| __| \| |_   _|_ _| \| | __| |   
-| (_) | .` | \ V /  >  < (_) |  _/\__ \ \___ \ _|| .` | | |  | || .` | _|| |__ 
- \___/|_|\_|  |_|  /_/\_\___/|_|  |___/ |____/___|_|\_| |_| |___|_|\_|___|____|
+## Setup
 
-  Automated Down Detection, Exploit Diagnostics & Threat Intelligence
-  Organization: WolfeGuard / OnyxOps | Lead Developer: sinfulldesirez | v1.0.0
+Use Python 3.12 or newer. Run these commands from the repository root in PowerShell:
 
-Choose an operation mode:
-
- [1] 🟢 24/7 Live Website Monitor (Continuous uptime & automated alert engine)
- [2] 🔍 Deep Exploit & Vulnerability Audit (CORS, Headers, Methods, Secrets)
- [3] ☁️ Cloudflare & Edge Diagnostics (52x errors, Ray ID, WAF rules)
- [4] 🔌 Port & Infrastructure Scanner (Database, SSH, Admin services)
- [5] 🦠 Web Integrity & Malware Scan (Crypto-miners, Defacement, Injected scripts)
- [6] 🎯 Target Manager (Add, list, or remove monitored websites)
- [7] 🔔 Test Alert Dispatchers (SMS, Email, Discord)
- [8] 📑 View Archived Incident Reports
- [0] 🚪 Exit
+```powershell
+python -m venv .venv
+python -m pip --python .venv install -r DownDetector/requirements.txt
 ```
 
----
+The active configuration is `DownDetector/config/config.yaml`. If it is missing,
+the application copies `DownDetector/config/config.example.yaml` on first load.
 
-## ⚡ Deepened Scanners & Diagnostic Capabilities
+The active configuration monitors these sites with a 30-second polling interval:
 
-### 1. 🟢 24/7 Live Continuous Website Monitor
-- **Real-Time Terminal Dashboard:** Live updating status table with HTTP codes, latency (ms), SSL certificate days remaining, uptime %, and root-cause diagnosis.
-- **Immediate Incident Trigger:** Automatically triggers the full Deep Exploit Scan the instant a site drops or degrades.
-- **Multi-Channel Dispatch:** Dispatches SMS, Email, and Discord alerts upon failure and recovery.
+- https://palisade.onyxops.org
+- https://onyxops.org
+- https://dubyu.xyz
 
-### 2. 🔍 Deep Vulnerability & Exploit Reconnaissance
-- **CORS Misconfiguration:** Tests for arbitrary origin reflection and wildcard credentials.
-- **Dangerous HTTP Methods:** Probes for `TRACE` (Cross-Site Tracing / XST vulnerability) and exposed `PUT`/`DELETE` methods.
-- **Insecure Cookies:** Audits every cookie for missing `HttpOnly` and `Secure` attributes.
-- **SPA-Aware Asset Probing:** Uses intelligent baseline 404 hashing to distinguish real exposed files from Single Page Application (SPA) catch-all routes. Probes for:
-  - `/.env`, `/.env.local`, `/.env.production`
-  - `/.git/HEAD`, `/.git/config`
-  - Database dumps (`.sql`, `.sqlite`, `.sqlite3`)
-  - Backups (`.zip`, `.tar.gz`, `wp-config.php.bak`)
-  - Admin/Debug endpoints (`/actuator/env`, `/elmah.axd`, `/phpinfo.php`, `/swagger.json`)
-- **OWASP Security Headers:** Audits `Strict-Transport-Security` (HSTS), `Content-Security-Policy` (CSP), `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`.
+Each monitoring round completes its checks before waiting for the polling interval.
+TLS checks and diagnostics on failure are enabled for all three targets.
 
-### 3. ☁️ Cloudflare Edge vs Origin Root-Cause Analyzer
-- **52x Error Translation:** Decodes Cloudflare status codes (520, 521, 522, 523, 524, 525, 526, 530).
-- **Origin IP Leak Detection:** Cross-references resolved IP addresses against Cloudflare's official IPv4 networks to warn if an origin IP is exposed, allowing attackers to bypass Cloudflare DDoS/WAF protection.
-- **Edge Metadata:** Captures Cloudflare Ray ID, cache status (HIT/MISS/DYNAMIC), and WAF challenge blocks.
+Notification channels start disabled. Add your credentials and recipients to the
+configuration before enabling a channel. Keep credentials out of version control.
 
-### 4. 🦠 Web Integrity, Intrusion & Malware Detector
-- Scans rendered HTML for embedded cryptocurrency miners (CoinHive, CryptoLoot, WebMinePool).
-- Detects obfuscated JavaScript droppers (`eval(atob(...))`, `eval(unescape(...))`).
-- Detects hidden zero-pixel `<iframe>` injections used in clickjacking and drive-by downloads.
-- Flags website defacement signatures.
+## Run
 
-### 5. 📢 Multi-Channel Alerting
-- **SMS / Phone Alerts:** Twilio REST API integration & custom webhooks.
-- **Email:** SMTP with TLS, sending structured HTML incident briefings.
-- **Discord:** Rich colored embeds (Red for Down/Threat, Green for Recovery, Orange for Warning).
+Open the interactive menu:
 
----
-
-## 🚀 Quick Launch
-
-### Run the Interactive Menu:
-Simply double-click or run:
-```cmd
-run.bat
-```
-Or with Python:
-```cmd
-python main.py
+```powershell
+.\.venv\Scripts\python.exe DownDetector/main.py
 ```
 
-### Direct CLI Shortcuts:
-- **Scan a specific URL:**
-  ```cmd
-  python main.py scan https://admin.onyxops.org/products
-  ```
-- **Start the 24/7 Monitor directly:**
-  ```cmd
-  python main.py run
-  ```
-- **Test Alert Channels:**
-  ```cmd
-  python main.py test-alerts
-  ```
+On Windows, you can also launch `DownDetector\run.bat`. The menu includes monitoring,
+security scans, Cloudflare diagnostics, port scans, HTML integrity checks, target
+management, alert tests, and archived reports.
 
----
-*OnyxOps by WolfeGuard • Lead Dev: sinfulldesirez*
+Start monitoring directly:
+
+```powershell
+.\.venv\Scripts\python.exe DownDetector/main.py run
+```
+
+Run a diagnostic scan against a site you administer:
+
+```powershell
+.\.venv\Scripts\python.exe DownDetector/main.py scan https://palisade.onyxops.org
+```
+
+Send test alerts to enabled channels:
+
+```powershell
+.\.venv\Scripts\python.exe DownDetector/main.py test-alerts
+```
+
+To use another configuration, place `--config PATH` before the command:
+
+```powershell
+.\.venv\Scripts\python.exe DownDetector/main.py --config custom.yaml run
+```
+
+Reports are written to `incidents/` under the current working directory. The
+Windows launchers use the `DownDetector` directory as their working directory.
+Press Ctrl+C to stop monitoring.
+
+## Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m pip check
+```
+
+Tests use local HTTP fixtures and mocks. They cover configuration loading, HTTP
+checks, scanner findings, outage and recovery state, and report generation.
+They do not scan the configured public sites or send real notifications.
