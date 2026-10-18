@@ -356,6 +356,108 @@ def target_manager(config_path: str):
             break
 
 # =====================================================================
+# FEATURE: TEAM NOTIFICATION RECIPIENT MANAGER
+# =====================================================================
+def team_recipient_manager(config_path: str):
+    while True:
+        config = load_config(config_path)
+        notifs = config.setdefault("notifications", {})
+        email_cfg = notifs.setdefault("email", {})
+        sms_cfg = notifs.setdefault("sms", {})
+        twilio_cfg = sms_cfg.setdefault("twilio", {})
+
+        raw_emails = email_cfg.get("to_addresses", [])
+        if isinstance(raw_emails, str):
+            raw_emails = [raw_emails]
+        email_list = [str(e).strip() for e in raw_emails if str(e).strip()]
+
+        raw_sms = twilio_cfg.get("to_numbers", [])
+        if isinstance(raw_sms, str):
+            raw_sms = [raw_sms]
+        sms_list = [str(s).strip() for s in raw_sms if str(s).strip()]
+
+        console.print("\n[bold cyan]=== Team Alert Recipient Manager ===[/bold cyan]")
+
+        e_status = "[green]ENABLED[/green]" if email_cfg.get("enabled", False) else "[dim red]DISABLED[/dim red]"
+        e_table = Table(title=f"Team Email Recipients (Status: {e_status})", show_header=True, header_style="bold magenta")
+        e_table.add_column("#", style="dim", width=4)
+        e_table.add_column("Recipient Email Address")
+        if not email_list:
+            e_table.add_row("-", "[dim italic]No email recipients configured[/dim italic]")
+        else:
+            for idx, em in enumerate(email_list, 1):
+                e_table.add_row(str(idx), em)
+        console.print(e_table)
+
+        s_status = "[green]ENABLED[/green]" if sms_cfg.get("enabled", False) else "[dim red]DISABLED[/dim red]"
+        s_table = Table(title=f"Team SMS Recipients (Status: {s_status})", show_header=True, header_style="bold green")
+        s_table.add_column("#", style="dim", width=4)
+        s_table.add_column("Phone Number (E.164: +1XXXXXXXXXX)")
+        if not sms_list:
+            s_table.add_row("-", "[dim italic]No SMS recipients configured[/dim italic]")
+        else:
+            for idx, ph in enumerate(sms_list, 1):
+                s_table.add_row(str(idx), ph)
+        console.print(s_table)
+
+        console.print("\n[1] Add Team Email Address")
+        console.print("[2] Remove Team Email Address")
+        console.print("[3] Add Team Phone Number (SMS)")
+        console.print("[4] Remove Team Phone Number (SMS)")
+        console.print("[0] Return to Main Menu")
+
+        choice = Prompt.ask("Select option", choices=["1", "2", "3", "4", "0"], default="0")
+
+        if choice == "1":
+            new_email = Prompt.ask("Enter Team Member Email Address").strip()
+            if new_email and new_email not in email_list:
+                email_list.append(new_email)
+                email_cfg["to_addresses"] = email_list
+                save_config(config, config_path)
+                console.print(f"[green]Added '{new_email}' to email alert recipients![/green]")
+            elif new_email in email_list:
+                console.print("[yellow]Email address already in recipient list.[/yellow]")
+        elif choice == "2":
+            if not email_list:
+                console.print("[yellow]No email recipients to remove.[/yellow]")
+                continue
+            idx_remove = Prompt.ask("Enter # of email to remove", default="1")
+            try:
+                idx_int = int(idx_remove) - 1
+                if 0 <= idx_int < len(email_list):
+                    removed = email_list.pop(idx_int)
+                    email_cfg["to_addresses"] = email_list
+                    save_config(config, config_path)
+                    console.print(f"[green]Removed '{removed}' from email recipients![/green]")
+            except ValueError:
+                console.print("[red]Invalid index.[/red]")
+        elif choice == "3":
+            new_phone = Prompt.ask("Enter Team Phone Number (E.164 format, e.g. +1234567890)").strip()
+            if new_phone and new_phone not in sms_list:
+                sms_list.append(new_phone)
+                twilio_cfg["to_numbers"] = sms_list
+                save_config(config, config_path)
+                console.print(f"[green]Added '{new_phone}' to SMS alert recipients![/green]")
+            elif new_phone in sms_list:
+                console.print("[yellow]Phone number already in recipient list.[/yellow]")
+        elif choice == "4":
+            if not sms_list:
+                console.print("[yellow]No SMS recipients to remove.[/yellow]")
+                continue
+            idx_remove = Prompt.ask("Enter # of phone number to remove", default="1")
+            try:
+                idx_int = int(idx_remove) - 1
+                if 0 <= idx_int < len(sms_list):
+                    removed = sms_list.pop(idx_int)
+                    twilio_cfg["to_numbers"] = sms_list
+                    save_config(config, config_path)
+                    console.print(f"[green]Removed '{removed}' from SMS recipients![/green]")
+            except ValueError:
+                console.print("[red]Invalid index.[/red]")
+        elif choice == "0":
+            break
+
+# =====================================================================
 # FEATURE 7: TEST ALERT DISPATCHERS
 # =====================================================================
 async def test_notifications(config_path: str):
@@ -428,9 +530,10 @@ async def interactive_menu(config_path: str):
         console.print(" [bold magenta][6][/bold magenta] 🎯 [bold]Target Manager[/bold] (Add, list, or remove monitored websites)")
         console.print(" [bold cyan][7][/bold cyan] 🔔 [bold]Test Alert Dispatchers[/bold] (SMS, Email, Discord)")
         console.print(" [bold white][8][/bold white] 📑 [bold]View Archived Incident Reports[/bold]")
+        console.print(" [bold blue][9][/bold blue] 👥 [bold]Team Recipient Manager[/bold] (Add/remove team emails & SMS numbers)")
         console.print(" [bold dim][0][/bold dim] 🚪 [dim]Exit[/dim]\n")
 
-        choice = Prompt.ask("[bold]Select an option[/bold]", choices=["1", "2", "3", "4", "5", "6", "7", "8", "0"], default="1")
+        choice = Prompt.ask("[bold]Select an option[/bold]", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"], default="1")
 
         if choice == "1":
             config = load_config(config_path)
@@ -473,6 +576,8 @@ async def interactive_menu(config_path: str):
         elif choice == "8":
             view_incident_reports()
             Prompt.ask("\nPress Enter to return to menu...")
+        elif choice == "9":
+            team_recipient_manager(config_path)
         elif choice == "0":
             console.print("\n[bold red]Shutting down OnyxOps Sentinel. Stay safe.[/bold red]\n")
             break

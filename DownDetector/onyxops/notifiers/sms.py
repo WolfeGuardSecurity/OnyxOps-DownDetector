@@ -53,7 +53,10 @@ class SMSNotifier(BaseNotifier):
         if not self.enabled:
             return False
 
-        to_numbers: List[str] = self.twilio_cfg.get("to_numbers", [])
+        raw_numbers = self.twilio_cfg.get("to_numbers", [])
+        if isinstance(raw_numbers, str):
+            raw_numbers = [raw_numbers]
+        to_numbers: List[str] = [str(n).strip() for n in raw_numbers if str(n).strip()]
         if not to_numbers:
             logger.warning("No recipient phone numbers configured for SMS alerts.")
             return False

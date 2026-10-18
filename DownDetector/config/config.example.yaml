@@ -35,8 +35,10 @@ notifications:
       account_sid: "YOUR_TWILIO_ACCOUNT_SID"
       auth_token: "YOUR_TWILIO_AUTH_TOKEN"
       from_number: "+1XXXXXXXXXX"
+      # List all team recipient phone numbers below (E.164 format: +[country_code][number])
       to_numbers:
         - "+1XXXXXXXXXX"
+        # - "+1YYYYYYYYYY"
     generic_webhook_url: ""
 
   # Email Notifications (Standard SMTP)
@@ -48,8 +50,10 @@ notifications:
     username: "alerts@yourdomain.com"
     password: "YOUR_APP_PASSWORD"
     from_address: "OnyxOps Alerts <alerts@yourdomain.com>"
+    # List all team recipient email addresses below
     to_addresses:
       - "admin@yourdomain.com"
+      # - "team_member_2@yourdomain.com"
 
   # Discord Webhook Notification
   discord:

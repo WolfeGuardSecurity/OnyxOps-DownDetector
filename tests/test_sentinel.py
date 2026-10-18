@@ -18,6 +18,8 @@ from onyxops.scanners.security import SecurityScanner, SECURITY_HEADERS
 from onyxops.scanners.uptime import UptimeScanner
 from onyxops.reporting.incident_report import IncidentReporter
 from onyxops.notifiers.discord import DiscordNotifier
+from onyxops.notifiers.email import EmailNotifier
+from onyxops.notifiers.sms import SMSNotifier
 from aiohttp import web
 
 
@@ -143,6 +145,40 @@ class AsyncTests(unittest.IsolatedAsyncioTestCase):
         await monitor.check_single_target(target)
         self.assertTrue(monitor.state['local']['is_up'])
         self.assertEqual(monitor.state['local']['uptime_pct'], 50)
+
+    async def test_multiple_email_recipients(self):
+        notifier = EmailNotifier({
+            'enabled': True,
+            'smtp_host': 'smtp.gmail.com',
+            'username': 'user@gmail.com',
+            'password': 'password',
+            'to_addresses': [' dev1@example.com ', 'dev2@example.com', '  ']
+        })
+        self.assertEqual(notifier.to_addresses, ['dev1@example.com', 'dev2@example.com'])
+
+        single_str_notifier = EmailNotifier({'to_addresses': ' devsolo@example.com '})
+        self.assertEqual(single_str_notifier.to_addresses, ['devsolo@example.com'])
+
+    async def test_multiple_sms_recipients(self):
+        notifier = SMSNotifier({
+            'enabled': True,
+            'provider': 'twilio',
+            'twilio': {
+                'account_sid': 'AC123',
+                'auth_token': 'secret',
+                'from_number': '+1234567890',
+                'to_numbers': [' +19876543210 ', '+15555555555', '']
+            }
+        })
+        dispatched_numbers = []
+        async def mock_send(to_num, msg):
+            dispatched_numbers.append(to_num)
+            return True
+
+        notifier._send_twilio_sms = mock_send
+        ok = await notifier._dispatch_to_all('Test message')
+        self.assertTrue(ok)
+        self.assertEqual(dispatched_numbers, ['+19876543210', '+15555555555'])
 
 
 if __name__ == '__main__':

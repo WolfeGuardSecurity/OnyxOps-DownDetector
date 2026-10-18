@@ -21,7 +21,10 @@ class EmailNotifier(BaseNotifier):
         self.username = config.get("username", "")
         self.password = config.get("password", "")
         self.from_address = config.get("from_address", "OnyxOps Sentinel <alerts@onyxops.internal>")
-        self.to_addresses: List[str] = config.get("to_addresses", [])
+        raw_to = config.get("to_addresses", [])
+        if isinstance(raw_to, str):
+            raw_to = [raw_to]
+        self.to_addresses: List[str] = [str(addr).strip() for addr in raw_to if str(addr).strip()]
 
     def _send_sync_email(self, subject: str, text_body: str, html_body: str) -> bool:
         if not (self.username and self.password and self.to_addresses):
