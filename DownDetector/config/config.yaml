@@ -1,0 +1,81 @@
+# OnyxOps DownDetector & Security Scanner Configuration
+# Developed by sinfulldesirez for WolfeGuard / OnyxOps
+
+system:
+  app_name: "OnyxOps Sentinel"
+  version: "1.0.0"
+  check_interval_seconds: 60
+  timeout_seconds: 15
+  max_retries: 2
+  log_level: "INFO"
+
+# Websites to monitor
+targets:
+  - id: "main-portal"
+    name: "OnyxOps Main Portal"
+    url: "https://example.com"
+    check_ssl: true
+    ssl_expiry_warning_days: 14
+    deep_scan_on_failure: true
+    periodic_security_scan_hours: 12
+    expected_status_codes: [200, 301, 302]
+    expected_content_keywords: []
+    headers:
+      User-Agent: "OnyxOps-Sentinel/1.0 (+https://wolfeguard.internal/bot)"
+
+# Notification Channels
+notifications:
+  enabled: true
+  
+  # SMS Notifications (Twilio or custom webhook)
+  sms:
+    enabled: false
+    provider: "twilio" # "twilio" or "generic_webhook"
+    twilio:
+      account_sid: "YOUR_TWILIO_ACCOUNT_SID"
+      auth_token: "YOUR_TWILIO_AUTH_TOKEN"
+      from_number: "+1XXXXXXXXXX"
+      to_numbers:
+        - "+1XXXXXXXXXX"
+    generic_webhook_url: ""
+
+  # Email Notifications (Standard SMTP)
+  email:
+    enabled: false
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    use_tls: true
+    username: "alerts@yourdomain.com"
+    password: "YOUR_APP_PASSWORD"
+    from_address: "OnyxOps Alerts <alerts@yourdomain.com>"
+    to_addresses:
+      - "admin@yourdomain.com"
+
+  # Discord Webhook Notification
+  discord:
+    enabled: true
+    webhook_url: "YOUR_DISCORD_WEBHOOK_URL"
+    username: "OnyxOps Sentinel"
+    avatar_url: "https://raw.githubusercontent.com/wolfeguard/assets/main/bot-icon.png"
+
+# Deep Scan & Diagnostic Rules
+deep_scan:
+  cloudflare_check: true
+  dns_diagnostic: true
+  port_scan:
+    enabled: true
+    ports: [80, 443, 8080, 8443, 21, 22, 3306, 5432, 27017, 6379]
+  security_audit:
+    check_exposed_files: true
+    paths_to_probe:
+      - "/.env"
+      - "/.git/HEAD"
+      - "/config.json"
+      - "/wp-config.php.bak"
+      - "/phpinfo.php"
+      - "/backup.zip"
+      - "/admin/"
+      - "/swagger.json"
+      - "/api/docs"
+    check_missing_security_headers: true
+    detect_malicious_scripts: true

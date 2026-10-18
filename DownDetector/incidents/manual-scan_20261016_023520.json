@@ -1,0 +1,102 @@
+{
+  "target_id": "manual-scan",
+  "target_name": "Manual Target (https://admin.onyxops.org/products)",
+  "url": "https://admin.onyxops.org/products",
+  "timestamp": "2026-10-16T02:35:20.743659+00:00",
+  "root_cause_summary": "General service degradation detected.",
+  "uptime": {
+    "is_up": true,
+    "status_code": 200,
+    "response_time_ms": 159.79,
+    "dns_ips": [
+      "104.21.4.222",
+      "172.67.132.139"
+    ],
+    "error": null,
+    "ssl": {
+      "valid": true,
+      "days_until_expiry": 88,
+      "issuer": "Google Trust Services"
+    }
+  },
+  "cloudflare": {
+    "is_cloudflare": true,
+    "cf_ray": "a4b3ab6b89771ec6-CMH",
+    "origin_vs_edge": "Edge & Origin Normal",
+    "cf_error_code": null,
+    "cf_error_meaning": null
+  },
+  "open_ports": [
+    {
+      "port": 80,
+      "service": "HTTP Web Traffic",
+      "state": "open"
+    },
+    {
+      "port": 443,
+      "service": "HTTPS Web Traffic",
+      "state": "open"
+    },
+    {
+      "port": 8080,
+      "service": "HTTP Alternate / Proxy",
+      "state": "open"
+    },
+    {
+      "port": 8443,
+      "service": "HTTPS Alternate",
+      "state": "open"
+    }
+  ],
+  "security_findings": [
+    {
+      "severity": "MEDIUM",
+      "category": "Missing Security Header",
+      "title": "Missing HTTP Strict Transport Security (HSTS)",
+      "detail": "The server does not enforce HTTPS connections via HSTS header.",
+      "remediation": "Add 'Strict-Transport-Security: max-age=31536000; includeSubDomains' to web server headers."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /config.json",
+      "detail": "Request to 'https://admin.onyxops.org/config.json' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/config.json' or remove this file immediately from web root."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /phpinfo.php",
+      "detail": "Request to 'https://admin.onyxops.org/phpinfo.php' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/phpinfo.php' or remove this file immediately from web root."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /backup.zip",
+      "detail": "Request to 'https://admin.onyxops.org/backup.zip' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/backup.zip' or remove this file immediately from web root."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /admin/",
+      "detail": "Request to 'https://admin.onyxops.org/admin/' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/admin/' or remove this file immediately from web root."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /swagger.json",
+      "detail": "Request to 'https://admin.onyxops.org/swagger.json' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/swagger.json' or remove this file immediately from web root."
+    },
+    {
+      "severity": "HIGH",
+      "category": "Exposed Sensitive File",
+      "title": "Exposed Resource Accessible: /api/docs",
+      "detail": "Request to 'https://admin.onyxops.org/api/docs' returned HTTP 200 OK. Peek: <!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewp...",
+      "remediation": "Block public access to '/api/docs' or remove this file immediately from web root."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "target_id": "manual-scan",
+  "target_name": "Manual Target (onyxops.org)",
+  "url": "onyxops.org",
+  "timestamp": "2026-10-16T02:46:43.221444+00:00",
+  "root_cause_summary": "Network/Connection Timeout or Refusal: Request error: onyxops.org",
+  "uptime": {
+    "is_up": false,
+    "status_code": null,
+    "response_time_ms": 0.28,
+    "dns_ips": [
+      "172.67.132.139",
+      "104.21.4.222"
+    ],
+    "error": "Request error: onyxops.org",
+    "ssl": null
+  },
+  "cloudflare": {
+    "is_cloudflare": false,
+    "cf_ray": null,
+    "origin_vs_edge": "Direct / Non-Cloudflare",
+    "cf_error_code": null,
+    "cf_error_meaning": null
+  },
+  "open_ports": [
+    {
+      "port": 80,
+      "service": "HTTP Web Traffic",
+      "state": "open"
+    },
+    {
+      "port": 443,
+      "service": "HTTPS Web Traffic",
+      "state": "open"
+    },
+    {
+      "port": 8080,
+      "service": "HTTP Alternate / Proxy",
+      "state": "open"
+    },
+    {
+      "port": 8443,
+      "service": "HTTPS Alternate",
+      "state": "open"
+    }
+  ],
+  "security_findings": []
+}
