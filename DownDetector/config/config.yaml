@@ -4,16 +4,38 @@
 system:
   app_name: "OnyxOps Sentinel"
   version: "1.0.0"
-  check_interval_seconds: 60
+  check_interval_seconds: 30
   timeout_seconds: 15
   max_retries: 2
   log_level: "INFO"
 
 # Websites to monitor
 targets:
-  - id: "main-portal"
-    name: "OnyxOps Main Portal"
-    url: "https://example.com"
+  - id: "palisade"
+    name: "Palisade"
+    url: "https://palisade.onyxops.org"
+    check_ssl: true
+    ssl_expiry_warning_days: 14
+    deep_scan_on_failure: true
+    periodic_security_scan_hours: 12
+    expected_status_codes: [200, 301, 302]
+    expected_content_keywords: []
+    headers:
+      User-Agent: "OnyxOps-Sentinel/1.0 (+https://wolfeguard.internal/bot)"
+  - id: "onyxops"
+    name: "OnyxOps"
+    url: "https://onyxops.org"
+    check_ssl: true
+    ssl_expiry_warning_days: 14
+    deep_scan_on_failure: true
+    periodic_security_scan_hours: 12
+    expected_status_codes: [200, 301, 302]
+    expected_content_keywords: []
+    headers:
+      User-Agent: "OnyxOps-Sentinel/1.0 (+https://wolfeguard.internal/bot)"
+  - id: "dubyu"
+    name: "Dubyu"
+    url: "https://dubyu.xyz"
     check_ssl: true
     ssl_expiry_warning_days: 14
     deep_scan_on_failure: true
@@ -53,7 +75,7 @@ notifications:
 
   # Discord Webhook Notification
   discord:
-    enabled: true
+    enabled: false
     webhook_url: "YOUR_DISCORD_WEBHOOK_URL"
     username: "OnyxOps Sentinel"
     avatar_url: "https://raw.githubusercontent.com/wolfeguard/assets/main/bot-icon.png"

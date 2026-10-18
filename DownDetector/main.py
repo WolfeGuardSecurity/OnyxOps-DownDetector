@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional, List
 import yaml
@@ -33,8 +34,9 @@ from onyxops.scanners.security import SecurityScanner
 from onyxops.scanners.integrity import IntegrityScanner
 
 console = Console()
+DEFAULT_CONFIG = str(Path(__file__).resolve().parent / "config" / "config.yaml")
 
-BANNER_TEXT = f"""
+BANNER_TEXT = rf"""
   ___  _  _ __   ____  _____  ___  ___   ____ ___ _  _ _____ ___ _  _ ____ _    
  / _ \| \| |\ \ / /\ \/ / _ \| _ \/ __| / ___| __| \| |_   _|_ _| \| | __| |   
 | (_) | .` | \ V /  >  < (_) |  _/\__ \ \___ \ _|| .` | | |  | || .` | _|| |__ 
@@ -44,11 +46,11 @@ BANNER_TEXT = f"""
   [dim]Organization: {__organization__} | Lead Developer: {__author__} | v{__version__}[/dim]
 """
 
-def load_config(config_path: str = "config/config.yaml") -> dict:
+def load_config(config_path: str = DEFAULT_CONFIG) -> dict:
     if not os.path.exists(config_path):
-        example_path = "config/config.example.yaml"
+        example_path = str(Path(__file__).resolve().parent / "config" / "config.example.yaml")
         if os.path.exists(example_path):
-            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            Path(config_path).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(example_path, config_path)
         else:
             console.print(f"[red]Configuration template {example_path} not found.[/red]")
@@ -57,7 +59,8 @@ def load_config(config_path: str = "config/config.yaml") -> dict:
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
-def save_config(config: dict, config_path: str = "config/config.yaml"):
+def save_config(config: dict, config_path: str = DEFAULT_CONFIG):
+    Path(config_path).parent.mkdir(parents=True, exist_ok=True)
     with open(config_path, "w", encoding="utf-8") as f:
         yaml.safe_dump(config, f, default_flow_style=False, sort_keys=False)
 
@@ -476,7 +479,7 @@ async def interactive_menu(config_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description="OnyxOps Sentinel - Down Detector & Threat Diagnostic Bot")
-    parser.add_argument("--config", default="config/config.yaml", help="Path to config.yaml")
+    parser.add_argument("--config", default=DEFAULT_CONFIG, help="Path to config.yaml")
 
     subparsers = parser.add_subparsers(dest="command", help="Command to execute (optional - omitting launches interactive menu)")
     subparsers.add_parser("menu", help="Launch interactive feature menu")

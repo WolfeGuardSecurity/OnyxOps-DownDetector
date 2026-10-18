@@ -1,5 +1,6 @@
 @echo off
 setlocal
+cd /d "%~dp0"
 title OnyxOps Sentinel - Deep Target Scanner
 
 if "%~1"=="" (
@@ -25,5 +26,6 @@ if %ERRORLEVEL% NEQ 0 (
     )
 )
 
-"%PYTHON_BIN%" main.py scan %TARGET_URL%
+if exist "%~dp0..\.venv\Scripts\python.exe" set "PYTHON_BIN=%~dp0..\.venv\Scripts\python.exe"
+"%PYTHON_BIN%" main.py scan "%TARGET_URL%"
 pause

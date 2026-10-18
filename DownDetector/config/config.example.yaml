@@ -4,7 +4,7 @@
 system:
   app_name: "OnyxOps Sentinel"
   version: "1.0.0"
-  check_interval_seconds: 60
+  check_interval_seconds: 30
   timeout_seconds: 15
   max_retries: 2
   log_level: "INFO"
@@ -53,7 +53,7 @@ notifications:
 
   # Discord Webhook Notification
   discord:
-    enabled: true
+    enabled: false
     webhook_url: "YOUR_DISCORD_WEBHOOK_URL"
     username: "OnyxOps Sentinel"
     avatar_url: "https://raw.githubusercontent.com/wolfeguard/assets/main/bot-icon.png"

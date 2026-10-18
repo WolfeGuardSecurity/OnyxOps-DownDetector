@@ -1,5 +1,6 @@
 @echo off
 setlocal
+cd /d "%~dp0"
 title OnyxOps Sentinel - Down Detector & Threat Diagnostic Bot
 chcp 65001 >nul
 
@@ -18,5 +19,6 @@ if %ERRORLEVEL% NEQ 0 (
     )
 )
 
+if exist "%~dp0..\.venv\Scripts\python.exe" set "PYTHON_BIN=%~dp0..\.venv\Scripts\python.exe"
 "%PYTHON_BIN%" main.py %*
 pause
